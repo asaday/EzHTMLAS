@@ -1,0 +1,13 @@
+
+framework module EzHTMLAS {
+
+
+    header "EzHTMLAS.h"
+    export *
+
+	module libxml2 {
+		header "libxml2_re.h"
+		link "xml2"
+	}
+}
+

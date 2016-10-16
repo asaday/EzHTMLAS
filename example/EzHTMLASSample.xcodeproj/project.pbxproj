@@ -1,0 +1,381 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1659F9B3CC8AAE53BBF543CE /* Pods_EzHTMLASSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 289B475A608E50BFCB12785C /* Pods_EzHTMLASSample.framework */; };
+		C37662411D5CDBFC00A3DE45 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37662401D5CDBFC00A3DE45 /* AppDelegate.swift */; };
+		C37662431D5CDBFC00A3DE45 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37662421D5CDBFC00A3DE45 /* ViewController.swift */; };
+		C37662461D5CDBFD00A3DE45 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C37662441D5CDBFD00A3DE45 /* Main.storyboard */; };
+		C37662481D5CDBFD00A3DE45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C37662471D5CDBFD00A3DE45 /* Assets.xcassets */; };
+		C376624B1D5CDBFD00A3DE45 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C37662491D5CDBFD00A3DE45 /* LaunchScreen.storyboard */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		289B475A608E50BFCB12785C /* Pods_EzHTMLASSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EzHTMLASSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		59429FE6409C71EBBBB10371 /* Pods-EzHTMLASSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTMLASSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTMLASSample/Pods-EzHTMLASSample.release.xcconfig"; sourceTree = "<group>"; };
+		89AF21277443B7A59FFEEA17 /* Pods-EzHTMLASSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTMLASSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTMLASSample/Pods-EzHTMLASSample.debug.xcconfig"; sourceTree = "<group>"; };
+		C376623D1D5CDBFC00A3DE45 /* EzHTMLASSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EzHTMLASSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C37662401D5CDBFC00A3DE45 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C37662421D5CDBFC00A3DE45 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C37662451D5CDBFD00A3DE45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C37662471D5CDBFD00A3DE45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C376624A1D5CDBFD00A3DE45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C376624C1D5CDBFD00A3DE45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C376623A1D5CDBFC00A3DE45 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1659F9B3CC8AAE53BBF543CE /* Pods_EzHTMLASSample.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		496A536E6B3E395836F6851D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				89AF21277443B7A59FFEEA17 /* Pods-EzHTMLASSample.debug.xcconfig */,
+				59429FE6409C71EBBBB10371 /* Pods-EzHTMLASSample.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		72F37AE55B4385AAEDD93170 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				289B475A608E50BFCB12785C /* Pods_EzHTMLASSample.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C37662341D5CDBFC00A3DE45 = {
+			isa = PBXGroup;
+			children = (
+				C376623F1D5CDBFC00A3DE45 /* EzHTMLASSample */,
+				C376623E1D5CDBFC00A3DE45 /* Products */,
+				496A536E6B3E395836F6851D /* Pods */,
+				72F37AE55B4385AAEDD93170 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		C376623E1D5CDBFC00A3DE45 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C376623D1D5CDBFC00A3DE45 /* EzHTMLASSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C376623F1D5CDBFC00A3DE45 /* EzHTMLASSample */ = {
+			isa = PBXGroup;
+			children = (
+				C37662401D5CDBFC00A3DE45 /* AppDelegate.swift */,
+				C37662421D5CDBFC00A3DE45 /* ViewController.swift */,
+				C37662441D5CDBFD00A3DE45 /* Main.storyboard */,
+				C37662471D5CDBFD00A3DE45 /* Assets.xcassets */,
+				C37662491D5CDBFD00A3DE45 /* LaunchScreen.storyboard */,
+				C376624C1D5CDBFD00A3DE45 /* Info.plist */,
+			);
+			path = EzHTMLASSample;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C376623C1D5CDBFC00A3DE45 /* EzHTMLASSample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C376624F1D5CDBFD00A3DE45 /* Build configuration list for PBXNativeTarget "EzHTMLASSample" */;
+			buildPhases = (
+				F05E7FC929E709021FE03499 /* [CP] Check Pods Manifest.lock */,
+				C37662391D5CDBFC00A3DE45 /* Sources */,
+				C376623A1D5CDBFC00A3DE45 /* Frameworks */,
+				C376623B1D5CDBFC00A3DE45 /* Resources */,
+				FB6F85C6A2F4063B8A9E6259 /* [CP] Embed Pods Frameworks */,
+				8198671E00B6107D722B70A2 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EzHTMLASSample;
+			productName = EzHTMLASSample;
+			productReference = C376623D1D5CDBFC00A3DE45 /* EzHTMLASSample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C37662351D5CDBFC00A3DE45 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0800;
+				ORGANIZATIONNAME = asada;
+				TargetAttributes = {
+					C376623C1D5CDBFC00A3DE45 = {
+						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
+					};
+				};
+			};
+			buildConfigurationList = C37662381D5CDBFC00A3DE45 /* Build configuration list for PBXProject "EzHTMLASSample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C37662341D5CDBFC00A3DE45;
+			productRefGroup = C376623E1D5CDBFC00A3DE45 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C376623C1D5CDBFC00A3DE45 /* EzHTMLASSample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C376623B1D5CDBFC00A3DE45 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C376624B1D5CDBFD00A3DE45 /* LaunchScreen.storyboard in Resources */,
+				C37662481D5CDBFD00A3DE45 /* Assets.xcassets in Resources */,
+				C37662461D5CDBFD00A3DE45 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8198671E00B6107D722B70A2 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EzHTMLASSample/Pods-EzHTMLASSample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F05E7FC929E709021FE03499 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		FB6F85C6A2F4063B8A9E6259 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EzHTMLASSample/Pods-EzHTMLASSample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C37662391D5CDBFC00A3DE45 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C37662431D5CDBFC00A3DE45 /* ViewController.swift in Sources */,
+				C37662411D5CDBFC00A3DE45 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		C37662441D5CDBFD00A3DE45 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C37662451D5CDBFD00A3DE45 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C37662491D5CDBFD00A3DE45 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C376624A1D5CDBFD00A3DE45 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C376624D1D5CDBFD00A3DE45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C376624E1D5CDBFD00A3DE45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C37662501D5CDBFD00A3DE45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 89AF21277443B7A59FFEEA17 /* Pods-EzHTMLASSample.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = EzHTMLASSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTMLASSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C37662511D5CDBFD00A3DE45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 59429FE6409C71EBBBB10371 /* Pods-EzHTMLASSample.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = EzHTMLASSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTMLASSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C37662381D5CDBFC00A3DE45 /* Build configuration list for PBXProject "EzHTMLASSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C376624D1D5CDBFD00A3DE45 /* Debug */,
+				C376624E1D5CDBFD00A3DE45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C376624F1D5CDBFD00A3DE45 /* Build configuration list for PBXNativeTarget "EzHTMLASSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C37662501D5CDBFD00A3DE45 /* Debug */,
+				C37662511D5CDBFD00A3DE45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C37662351D5CDBFC00A3DE45 /* Project object */;
+}
