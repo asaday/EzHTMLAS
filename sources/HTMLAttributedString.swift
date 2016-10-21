@@ -65,19 +65,6 @@ public extension NSAttributedString
 	}
 }
 
-public extension NSParagraphStyle {
-
-	static func makeWithAlignment(_ alignment: NSTextAlignment) -> NSParagraphStyle {
-		let p = NSMutableParagraphStyle()
-		p.alignment = alignment
-		return p as NSParagraphStyle
-	}
-
-	static var Right: NSParagraphStyle { return makeWithAlignment(.right) }
-	static var Left: NSParagraphStyle { return makeWithAlignment(.left) }
-	static var Center: NSParagraphStyle { return makeWithAlignment(.center) }
-}
-
 public struct HTMLAttributedString {
 
 	public static func setStyle(_ key: String, _ font: UIFont, _ color: UIColor?, _ bgcolor: UIColor?) {
@@ -201,7 +188,7 @@ public struct HTMLAttributedString {
 
 			while let v = current.last {
 				if elements.contains(v) { break }
-				result += "</\( v.components(separatedBy:" ").first ?? "")>"
+				result += "</\( v.components(separatedBy: " ").first ?? "")>"
 				current.removeLast()
 			}
 
@@ -222,7 +209,7 @@ public struct HTMLAttributedString {
 		}
 
 		while let v = current.last {
-			result += "</\( v.components(separatedBy:" ").first ?? "")>"
+			result += "</\( v.components(separatedBy: " ").first ?? "")>"
 			current.removeLast()
 		}
 
@@ -268,6 +255,12 @@ public struct HTMLAttributedString {
 			} else { atb[NSFontAttributeName] = UIFont.boldSystemFont(ofSize: 17) }
 		}
 
+		func newParagraph() -> NSMutableParagraphStyle {
+			let v = NSMutableParagraphStyle()
+			v.lineBreakMode = .byTruncatingTail
+			return v
+		}
+
 		func modifyAttribute(_ atb: inout [String: Any], font: UIFont, node: xmlNodePtr) -> NSAttributedString? {
 
 			var result: NSAttributedString? = nil
@@ -307,12 +300,12 @@ public struct HTMLAttributedString {
 				if let v = params["color"] { atb[NSForegroundColorAttributeName] = UIColor.hexColor(v) }
 				if let v = params["background"] { atb[NSBackgroundColorAttributeName] = UIColor.hexColor(v) }
 				if let v = params["line-height"] {
-					let ps = NSMutableParagraphStyle()
+					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
 					ps.maximumLineHeight = v.CGFloatValue
 					ps.minimumLineHeight = v.CGFloatValue
 					atb[NSParagraphStyleAttributeName] = ps
 				}
-				
+
 			case "b":
 				changeFontTrait(&atb, traits: .traitBold)
 
@@ -346,12 +339,28 @@ public struct HTMLAttributedString {
 				}
 
 				if let v = params["align"] {
+					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
 					switch v {
-					case "left": atb[NSParagraphStyleAttributeName] = NSParagraphStyle.Left
-					case "right": atb[NSParagraphStyleAttributeName] = NSParagraphStyle.Right
-					case "center": atb[NSParagraphStyleAttributeName] = NSParagraphStyle.Center
+					case "left": ps.alignment = .left
+					case "right": ps.alignment = .right
+					case "center": ps.alignment = .center
 					default: break
 					}
+					atb[NSParagraphStyleAttributeName] = ps
+				}
+
+				if let v = params["line-break"] {
+					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
+					switch v {
+					case "word-wrapping": ps.lineBreakMode = .byWordWrapping
+					case "char-wrapping": ps.lineBreakMode = .byCharWrapping
+					case "clipping": ps.lineBreakMode = .byClipping
+					case "truncating-head": ps.lineBreakMode = .byTruncatingHead
+					case "truncating-tail": ps.lineBreakMode = .byTruncatingTail // when align set, auto selected this
+					case "truncating-middle": ps.lineBreakMode = .byTruncatingMiddle
+					default: break
+					}
+					atb[NSParagraphStyleAttributeName] = ps
 				}
 
 				if let v = params["direction"] {
@@ -420,7 +429,8 @@ public struct HTMLAttributedString {
 		if rs.hasPrefix("\n") { result.deleteCharacters(in: NSRange(location: 0, length: 1)) }
 
 		// add original base size
-		result.addAttributes(["baseFont": font], range: NSRange(location: 0, length: result.length))
+		let fullRange = NSRange(location: 0, length: result.length)
+		result.addAttributes(["baseFont": font], range: fullRange)
 
 		return result
 	}

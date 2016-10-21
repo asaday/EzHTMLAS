@@ -16,7 +16,7 @@ extension String {
 		if let _ = range(of: str) { return true }
 		return false
 	}
-	
+
 	func replace(_ dic: [(String, String)]) -> String {
 		let ms: NSMutableString = NSMutableString(string: self)
 		dic.forEach { (k, v) in
