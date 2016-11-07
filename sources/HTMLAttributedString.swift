@@ -250,8 +250,8 @@ public struct HTMLAttributedString {
 		}
 
 		func changeFontTrait(_ atb: inout [String: Any], traits: UIFontDescriptorSymbolicTraits) {
-			if let f = atb[NSFontAttributeName] as? UIFont {
-				atb[NSFontAttributeName] = UIFont(descriptor: f.fontDescriptor.withSymbolicTraits(traits)!, size: f.pointSize)
+			if let f = atb[NSFontAttributeName] as? UIFont, let fd = f.fontDescriptor.withSymbolicTraits(traits) {
+				atb[NSFontAttributeName] = UIFont(descriptor: fd, size: f.pointSize)
 			} else { atb[NSFontAttributeName] = UIFont.boldSystemFont(ofSize: 17) }
 		}
 

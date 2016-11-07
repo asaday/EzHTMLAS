@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
 s.name         = "EzHTMLAS"
-s.version      = "0.0.3"
+s.version      = "0.0.4"
 s.summary      = "HTML to AttributedString"
 
 s.homepage     = "http://nagisaworks.com"
