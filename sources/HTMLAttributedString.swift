@@ -399,8 +399,8 @@ public struct HTMLAttributedString {
 
 			if node.pointee.type != XML_ENTITY_REF_NODE && node.pointee.type != XML_ELEMENT_NODE && node.pointee.content != nil {
 				if let s = xstr(node.pointee.content) {
-					let t = s.removingPercentEncoding ?? ""
-					result.append(NSAttributedString(string: t, attributes: atb))
+					//let t = s.removingPercentEncoding ?? ""
+					result.append(NSAttributedString(string: s, attributes: atb))
 				}
 			}
 
