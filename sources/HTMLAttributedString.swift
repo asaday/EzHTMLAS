@@ -2,7 +2,6 @@
 // Copyright (c) NagisaWorks asaday
 // The MIT License (MIT)
 
-
 import UIKit
 
 extension UILabel {
@@ -33,6 +32,34 @@ extension UITextView {
 		}
 		set {
 			attributedText = newValue.attributedString(font)
+			loadAttachedImages()
+		}
+	}
+
+	private func loadAttachedImages() {
+		attributedText.enumerateAttribute("requestimage", in: NSMakeRange(0, attributedText.length), options: []) { value, _, _ in
+			guard let param = value as? [String: Any],
+				let src = param["src"] as? String,
+				let attach = param["attach"] as? NSTextAttachment,
+				let url = URL(string: src) else { return }
+
+			let capHeight = param["capheight"]
+			let task = URLSession.shared.dataTask(with: url) { [weak self, weak wat = attach] d, _, _ in
+				guard let dd = d, let img = UIImage(data: dd) else { return }
+				DispatchQueue.main.async {
+
+					if let h = capHeight as? CGFloat {
+						wat?.bounds = CGRect(x: 0, y: round((h - img.size.height) / 2), width: img.size.width, height: img.size.height)
+					}
+					wat?.image = img
+
+					if let z = self?.attributedText { // reload
+						self?.attributedText = NSAttributedString()
+						self?.attributedText = z
+					}
+				}
+			}
+			task.resume()
 		}
 	}
 }
@@ -58,8 +85,7 @@ extension String {
 	}
 }
 
-public extension NSAttributedString
-{
+public extension NSAttributedString {
 	func HTMLString(_ font: UIFont? = nil) -> String {
 		return HTMLAttributedString.toHTML(self, font: font ?? UIFont.systemFont(ofSize: 17))
 	}
@@ -92,10 +118,10 @@ public struct HTMLAttributedString {
 	public static var fontSizes: [CGFloat] = [0.6, 0.75, 0.9, 1.0, 1.2, 1.5, 2.0, 3.0] // mul
 
 	public static var iconFont = "FontAwesome"
-//
-//	// for extend
-//	public static var as2htmlHandler: ((_ atb: [String: Any], _ str: String, _ elements: inout [String]) -> String?)?
-//	public static var html2asHandler: ((_ element: String, _ params: [String: String], _ atb: inout [String: Any]) -> NSAttributedString?)?
+	//
+	//	// for extend
+	//	public static var as2htmlHandler: ((_ atb: [String: Any], _ str: String, _ elements: inout [String]) -> String?)?
+	//	public static var html2asHandler: ((_ element: String, _ params: [String: String], _ atb: inout [String: Any]) -> NSAttributedString?)?
 
 	/* return tags
 	 font size=1-7
@@ -129,7 +155,7 @@ public struct HTMLAttributedString {
 					var done = false
 					for i in 0 ..< fontSizes.count {
 						if font.pointSize * fontSizes[i] == f.pointSize {
-							fontr.append("size=\"\((i))\"")
+							fontr.append("size=\"\(i)\"")
 							done = true
 							break
 						}
@@ -154,7 +180,6 @@ public struct HTMLAttributedString {
 				default:
 					break
 				}
-
 			}
 
 			if !fontr.isEmpty { result.append("font " + fontr.joined(separator: " ")) }
@@ -162,20 +187,19 @@ public struct HTMLAttributedString {
 			return result
 		}
 
-
 		var current: [String] = []
 		var result: String = ""
 
-		astring.enumerateAttributes(in: NSRange(location: 0, length: astring.length), options: []) { (attributes, range, pointer) in
+		astring.enumerateAttributes(in: NSRange(location: 0, length: astring.length), options: []) { attributes, range, _ in
 			let elements = nsatb2htmlElement(attributes, font: font)
 			let str = astring.attributedSubstring(from: range).string
 
-//			if let h = as2htmlHandler {
-//				if let r = h(attributes, str, &elements) {
-//					result += r
-//					return
-//				}
-//			}
+			//			if let h = as2htmlHandler {
+			//				if let r = h(attributes, str, &elements) {
+			//					result += r
+			//					return
+			//				}
+			//			}
 
 			if str == "\u{fffc}" {
 				result += "<img"
@@ -188,7 +212,7 @@ public struct HTMLAttributedString {
 
 			while let v = current.last {
 				if elements.contains(v) { break }
-				result += "</\( v.components(separatedBy: " ").first ?? "")>"
+				result += "</\(v.components(separatedBy: " ").first ?? "")>"
 				current.removeLast()
 			}
 
@@ -204,19 +228,19 @@ public struct HTMLAttributedString {
 				("\"", "&quot;"),
 				("<", "&lt;"),
 				(">", "&gt;"),
-				("\n", "<br/>")])
-
+				("\n", "<br/>"),
+			])
 		}
 
 		while let v = current.last {
-			result += "</\( v.components(separatedBy: " ").first ?? "")>"
+			result += "</\(v.components(separatedBy: " ").first ?? "")>"
 			current.removeLast()
 		}
 
 		return result
 	}
 
-	/*capable
+	/* capable
 
 	 font size=1-7 (default:3 relative)
 	 font point-size=point
@@ -236,7 +260,7 @@ public struct HTMLAttributedString {
 
 		func xstr(_ ptr: UnsafePointer<xmlChar>?) -> String? {
 			guard let ptr = ptr else { return nil }
-			var r: String? = nil
+			var r: String?
 			ptr.withMemoryRebound(to: CChar.self, capacity: 4) {
 				r = String(cString: $0)
 			}
@@ -263,7 +287,7 @@ public struct HTMLAttributedString {
 
 		func modifyAttribute(_ atb: inout [String: Any], font: UIFont, node: xmlNodePtr) -> NSAttributedString? {
 
-			var result: NSAttributedString? = nil
+			var result: NSAttributedString?
 
 			guard let ielement = xstr(node.pointee.name) else { return result }
 			let element = ielement.lowercased()
@@ -313,19 +337,31 @@ public struct HTMLAttributedString {
 				changeFontTrait(&atb, traits: .traitItalic)
 
 			case "img":
-				if let src = params["src"], let img = UIImage(named: src) {
+				if let src = params["src"] {
 					let attach = NSTextAttachment()
-					attach.image = img
-					var rc: CGRect = CGRect.zero
-					rc.size = img.size
+					var rc: CGRect = .zero
+					if let img = UIImage(named: src) {
+						attach.image = img
+						rc.size = img.size
+						rc.origin.y = round((font.capHeight - img.size.height) / 2)
+					}
+
 					if let v = params["width"] { rc.size.width = v.CGFloatValue }
 					if let v = params["height"] { rc.size.height = v.CGFloatValue }
-					rc.origin.y = round((font.capHeight - img.size.height) / 2)
 					if let v = params["x"] { rc.origin.x = v.CGFloatValue } // may be no effect x
 					if let v = params["y"] { rc.origin.y = v.CGFloatValue }
-					attach.bounds = rc
+
+					if rc.width > 0 && rc.height > 0 { attach.bounds = rc }
+
 					let ras = NSAttributedString(attachment: attach).mutableCopy() as? NSMutableAttributedString
 					ras?.addAttribute("imgsrc", value: src, range: NSRange(location: 0, length: 1))
+
+					if attach.image == nil {
+						var dic: [String: Any] = ["src": src, "attach": attach]
+						if rc.width == 0 && rc.height == 0 { dic["capheight"] = font.capHeight }
+						ras?.addAttribute("requestimage", value: dic, range: NSRange(location: 0, length: 1))
+					}
+
 					result = ras?.copy() as? NSAttributedString
 				}
 
@@ -378,9 +414,9 @@ public struct HTMLAttributedString {
 
 			default:
 				break
-//			if let h = html2asHandler {
-//				if let r = h(element, params, &atb) { result = r }
-//			}
+				//			if let h = html2asHandler {
+				//				if let r = h(element, params, &atb) { result = r }
+				//			}
 			}
 
 			return result
@@ -399,7 +435,7 @@ public struct HTMLAttributedString {
 
 			if node.pointee.type != XML_ENTITY_REF_NODE && node.pointee.type != XML_ELEMENT_NODE && node.pointee.content != nil {
 				if let s = xstr(node.pointee.content) {
-					//let t = s.removingPercentEncoding ?? ""
+					// let t = s.removingPercentEncoding ?? ""
 					result.append(NSAttributedString(string: s, attributes: atb))
 				}
 			}
@@ -434,5 +470,4 @@ public struct HTMLAttributedString {
 
 		return result
 	}
-
 }

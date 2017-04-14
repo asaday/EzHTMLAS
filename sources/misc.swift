@@ -7,7 +7,7 @@ import UIKit
 extension String {
 	var intValue: Int { return Int(self) ?? 0 }
 	var floatValue: Float { return Float(self) ?? 0 }
-	var CGFloatValue: CGFloat { return CGFloat(self.floatValue) }
+	var CGFloatValue: CGFloat { return CGFloat(floatValue) }
 	var length: Int { return characters.count }
 
 	var ns: NSString { return (self as NSString) }
@@ -19,12 +19,11 @@ extension String {
 
 	func replace(_ dic: [(String, String)]) -> String {
 		let ms: NSMutableString = NSMutableString(string: self)
-		dic.forEach { (k, v) in
+		dic.forEach { k, v in
 			ms.replaceOccurrences(of: k, with: v, options: .caseInsensitive, range: NSMakeRange(0, ms.length))
 		}
 		return String(ms)
 	}
-
 }
 
 extension UIColor {
