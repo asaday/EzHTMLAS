@@ -12,6 +12,7 @@
 		C37662291D5CCD3200A3DE45 /* libxml2_re.h in Headers */ = {isa = PBXBuildFile; fileRef = C37662251D5CCD3200A3DE45 /* libxml2_re.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C376622B1D5CCDDE00A3DE45 /* misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = C376622A1D5CCDDE00A3DE45 /* misc.swift */; };
 		C376622F1D5CCFA800A3DE45 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C376622E1D5CCFA800A3DE45 /* libxml2.tbd */; };
+		C3DD4E941EAD8B720038C0FF /* HASClickableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DD4E931EAD8B720038C0FF /* HASClickableLabel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		C37662251D5CCD3200A3DE45 /* libxml2_re.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libxml2_re.h; sourceTree = "<group>"; };
 		C376622A1D5CCDDE00A3DE45 /* misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = misc.swift; sourceTree = "<group>"; };
 		C376622E1D5CCFA800A3DE45 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		C3DD4E931EAD8B720038C0FF /* HASClickableLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HASClickableLabel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 				C37662241D5CCD3200A3DE45 /* HTMLAttributedString.swift */,
 				C37662251D5CCD3200A3DE45 /* libxml2_re.h */,
 				C376622A1D5CCDDE00A3DE45 /* misc.swift */,
+				C3DD4E931EAD8B720038C0FF /* HASClickableLabel.swift */,
 			);
 			path = sources;
 			sourceTree = "<group>";
@@ -154,6 +157,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3DD4E941EAD8B720038C0FF /* HASClickableLabel.swift in Sources */,
 				C37662281D5CCD3200A3DE45 /* HTMLAttributedString.swift in Sources */,
 				C376622B1D5CCDDE00A3DE45 /* misc.swift in Sources */,
 			);

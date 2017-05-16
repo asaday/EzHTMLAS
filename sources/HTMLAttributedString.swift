@@ -14,12 +14,55 @@ extension UILabel {
 			// 1st chr has font setting, label.font is 1st char font
 		}
 		set {
-			if newValue.has(string: "<") {
-				attributedText = newValue.attributedString(font)
-			} else {
-				attributedText = NSAttributedString(string: newValue)
+			let nstr = "<font point=\"\(font.pointSize)\">" + newValue + "</font>" // set to base font size to whole,this for correct nsattrinbutestring.size
+			attributedText = nstr.attributedString(font)
+
+			attributedText?.loadAttachedImages { [weak self] in
+				guard let me = self else { return }
+				let z = me.attributedText
+				me.attributedText = NSAttributedString()
+				me.attributedText = z
 			}
 		}
+	}
+
+	public func hasLink() -> Bool {
+		var has = false
+		if let ats = attributedText {
+			ats.enumerateAttribute(NSLinkAttributeName, in: NSMakeRange(0, ats.length), options: [], using: { v, _, _ in
+				if v != nil { has = true }
+			})
+		}
+		return has
+	}
+
+	public func findLink(position: CGPoint) -> String? {
+		guard let ats = attributedText else { return nil }
+
+		let layoutManager = NSLayoutManager()
+		let textContainer = NSTextContainer(size: bounds.size)
+		let textStorage = NSTextStorage(attributedString: ats)
+
+		layoutManager.addTextContainer(textContainer)
+		textStorage.addLayoutManager(layoutManager)
+
+		textContainer.lineFragmentPadding = 0.0
+		textContainer.lineBreakMode = lineBreakMode
+		textContainer.maximumNumberOfLines = numberOfLines
+
+		let textBoundingBox = layoutManager.usedRect(for: textContainer)
+
+		var offset = CGPoint(x: 0, y: textBoundingBox.origin.y - (bounds.height - textBoundingBox.size.height) / 2)
+		if textAlignment == .center { offset.x = textBoundingBox.origin.x - (bounds.width - textBoundingBox.size.width) / 2 }
+		if textAlignment == .right { offset.x = textBoundingBox.origin.x - (bounds.width - textBoundingBox.size.width) }
+
+		let pos = CGPoint(x: position.x + offset.x, y: position.y + offset.y)
+		if !textBoundingBox.contains(pos) { return nil }
+		let index = layoutManager.characterIndex(for: pos, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+		if index < 0 || index >= ats.length { return nil }
+
+		guard let val = ats.attribute(NSLinkAttributeName, at: index, effectiveRange: nil) as? String else { return nil }
+		return val
 	}
 }
 
@@ -32,34 +75,13 @@ extension UITextView {
 		}
 		set {
 			attributedText = newValue.attributedString(font)
-			loadAttachedImages()
-		}
-	}
 
-	private func loadAttachedImages() {
-		attributedText.enumerateAttribute("requestimage", in: NSMakeRange(0, attributedText.length), options: []) { value, _, _ in
-			guard let param = value as? [String: Any],
-				let src = param["src"] as? String,
-				let attach = param["attach"] as? NSTextAttachment,
-				let url = URL(string: src) else { return }
-
-			let capHeight = param["capheight"]
-			let task = URLSession.shared.dataTask(with: url) { [weak self, weak wat = attach] d, _, _ in
-				guard let dd = d, let img = UIImage(data: dd) else { return }
-				DispatchQueue.main.async {
-
-					if let h = capHeight as? CGFloat {
-						wat?.bounds = CGRect(x: 0, y: round((h - img.size.height) / 2), width: img.size.width, height: img.size.height)
-					}
-					wat?.image = img
-
-					if let z = self?.attributedText { // reload
-						self?.attributedText = NSAttributedString()
-						self?.attributedText = z
-					}
-				}
+			attributedText.loadAttachedImages { [weak self] in
+				guard let me = self else { return }
+				let z = me.attributedText
+				me.attributedText = NSAttributedString()
+				me.attributedText = z
 			}
-			task.resume()
 		}
 	}
 }
@@ -89,6 +111,29 @@ public extension NSAttributedString {
 	func HTMLString(_ font: UIFont? = nil) -> String {
 		return HTMLAttributedString.toHTML(self, font: font ?? UIFont.systemFont(ofSize: 17))
 	}
+
+	func loadAttachedImages(completion: (() -> Void)?) {
+		enumerateAttribute("requestimage", in: NSMakeRange(0, length), options: []) { value, _, _ in
+			guard let param = value as? [String: Any],
+				let src = param["src"] as? String,
+				let attach = param["attach"] as? NSTextAttachment,
+				let url = URL(string: src) else { return }
+
+			let task = URLSession.shared.dataTask(with: url) { d, _, _ in
+				guard let od = d, let img = UIImage(data: od) else { return }
+				DispatchQueue.main.async {
+
+					if let h = param["capheight"] as? CGFloat {
+						attach.bounds = CGRect(x: 0, y: round((h - img.size.height) / 2), width: img.size.width, height: img.size.height)
+					}
+
+					attach.image = img
+					completion?()
+				}
+			}
+			task.resume()
+		}
+	}
 }
 
 public struct HTMLAttributedString {
@@ -112,12 +157,22 @@ public struct HTMLAttributedString {
 		"foot": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.footnote)], // 13
 		"caption1": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.caption1)], // 12
 		"caption2": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.caption2)], // 11
+		"a": [NSUnderlineStyleAttributeName: 1, NSForegroundColorAttributeName: UIColor(red: 0, green: 0.48, blue: 1, alpha: 1)],
+
 		// you can add more
 	]
 
 	public static var fontSizes: [CGFloat] = [0.6, 0.75, 0.9, 1.0, 1.2, 1.5, 2.0, 3.0] // mul
 
-	public static var iconFont = "FontAwesome"
+//	public static var iconFont = "FontAwesome"
+	
+	public struct ExtFontParam {
+		let fontName:String
+		let list:[String:String]
+	}
+	
+	public static var extFonts: [String: ExtFontParam] = [:]
+	
 	//
 	//	// for extend
 	//	public static var as2htmlHandler: ((_ atb: [String: Any], _ str: String, _ elements: inout [String]) -> String?)?
@@ -321,8 +376,8 @@ public struct HTMLAttributedString {
 
 				if let v = params["point-size"] { changeFontSize(&atb, size: v.CGFloatValue) }
 				if let v = params["point"] { changeFontSize(&atb, size: v.CGFloatValue) }
-				if let v = params["color"] { atb[NSForegroundColorAttributeName] = UIColor.hexColor(v) }
-				if let v = params["background"] { atb[NSBackgroundColorAttributeName] = UIColor.hexColor(v) }
+				if let v = params["color"] { atb[NSForegroundColorAttributeName] = UIColor.cssColor(v) }
+				if let v = params["background"] { atb[NSBackgroundColorAttributeName] = UIColor.cssColor(v) }
 				if let v = params["line-height"] {
 					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
 					ps.maximumLineHeight = v.CGFloatValue
@@ -334,6 +389,9 @@ public struct HTMLAttributedString {
 				changeFontTrait(&atb, traits: .traitBold)
 
 			case "i":
+				// <i class="material-icons">face</i>
+				// <i class="material-icons md-24">face</i>
+				
 				changeFontTrait(&atb, traits: .traitItalic)
 
 			case "img":
@@ -404,12 +462,17 @@ public struct HTMLAttributedString {
 				}
 
 			case "a":
-				if let v = params["href"] { atb[NSLinkAttributeName] = v }
+				if let v = params["href"] {
+					atb[NSLinkAttributeName] = v
+					if let style = styles["a"] {
+						for (k, z) in style { atb[k] = z }
+					}
+				}
 
 			case "icon":
 				if let src = params["src"] {
-					let fname = params["font"] ?? iconFont
-					result = NSAttributedString(string: src, attributes: [NSFontAttributeName: fname])
+//					let fname = params["font"] ?? iconFont
+//					result = NSAttributedString(string: src, attributes: [NSFontAttributeName: fname])
 				}
 
 			default:
