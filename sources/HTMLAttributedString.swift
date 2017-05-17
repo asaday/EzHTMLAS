@@ -164,15 +164,20 @@ public struct HTMLAttributedString {
 
 	public static var fontSizes: [CGFloat] = [0.6, 0.75, 0.9, 1.0, 1.2, 1.5, 2.0, 3.0] // mul
 
-//	public static var iconFont = "FontAwesome"
-	
-	public struct ExtFontParam {
-		let fontName:String
-		let list:[String:String]
+	//	public static var iconFont = "FontAwesome"
+
+	//	let xx = ExtFontParam(font: "")
+	struct ExtFontParam {
+		let font: String
+		let names: [String: Int]
 	}
-	
-	public static var extFonts: [String: ExtFontParam] = [:]
-	
+
+	static var extFonts: [String: ExtFontParam] = [:]
+
+	public static func addExtraFont(cssName: String, fontName: String, charNames: [String: Int]) {
+		extFonts[cssName] = ExtFontParam(font: fontName, names: charNames)
+	}
+
 	//
 	//	// for extend
 	//	public static var as2htmlHandler: ((_ atb: [String: Any], _ str: String, _ elements: inout [String]) -> String?)?
@@ -376,8 +381,8 @@ public struct HTMLAttributedString {
 
 				if let v = params["point-size"] { changeFontSize(&atb, size: v.CGFloatValue) }
 				if let v = params["point"] { changeFontSize(&atb, size: v.CGFloatValue) }
-				if let v = params["color"] { atb[NSForegroundColorAttributeName] = UIColor.cssColor(v) }
-				if let v = params["background"] { atb[NSBackgroundColorAttributeName] = UIColor.cssColor(v) }
+				if let v = params["color"] { atb[NSForegroundColorAttributeName] = UIColor.css(v) }
+				if let v = params["background"] { atb[NSBackgroundColorAttributeName] = UIColor.css(v) }
 				if let v = params["line-height"] {
 					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
 					ps.maximumLineHeight = v.CGFloatValue
@@ -390,9 +395,23 @@ public struct HTMLAttributedString {
 
 			case "i":
 				// <i class="material-icons">face</i>
-				// <i class="material-icons md-24">face</i>
-				
-				changeFontTrait(&atb, traits: .traitItalic)
+				// <i class="material-icons 24">face</i>
+				// <i class="material-icons 24 -12">face</i>
+				// <i class="material-icons">&#xE87C;</i>
+
+				if let cls = params["class"] {
+					let ss = cls.components(separatedBy: " ")
+					if let ex = extFonts[ss[0]] {
+						var size: CGFloat = 18
+						if let f = atb[NSFontAttributeName] as? UIFont { size = f.pointSize }
+						if let v = ss[safe: 1] { size = v.CGFloatValue }
+						if let v = ss[safe: 2] { atb[NSBaselineOffsetAttributeName] = v.floatValue }
+						atb[NSFontAttributeName] = UIFont(name: ex.font, size: size)
+						atb["exfont"] = ss[0]
+					}
+				} else {
+					changeFontTrait(&atb, traits: .traitItalic)
+				}
 
 			case "img":
 				if let src = params["src"] {
@@ -469,17 +488,8 @@ public struct HTMLAttributedString {
 					}
 				}
 
-			case "icon":
-				if let src = params["src"] {
-//					let fname = params["font"] ?? iconFont
-//					result = NSAttributedString(string: src, attributes: [NSFontAttributeName: fname])
-				}
-
 			default:
 				break
-				//			if let h = html2asHandler {
-				//				if let r = h(element, params, &atb) { result = r }
-				//			}
 			}
 
 			return result
@@ -499,7 +509,7 @@ public struct HTMLAttributedString {
 			if node.pointee.type != XML_ENTITY_REF_NODE && node.pointee.type != XML_ELEMENT_NODE && node.pointee.content != nil {
 				if let s = xstr(node.pointee.content) {
 					// let t = s.removingPercentEncoding ?? ""
-					result.append(NSAttributedString(string: s, attributes: atb))
+					result.append(makeAppendAttributedString(s: s, attributes: atb))
 				}
 			}
 
@@ -509,6 +519,14 @@ public struct HTMLAttributedString {
 				current = current?.pointee.next
 			}
 			return result
+		}
+
+		func makeAppendAttributedString(s: String, attributes: [String: Any]) -> NSAttributedString {
+			if let exfont = attributes["exfont"] as? String, let code = extFonts[exfont]?.names[s.trim()] {
+				return NSAttributedString(string: String(describing: UnicodeScalar(code)), attributes: attributes)
+			}
+
+			return NSAttributedString(string: s, attributes: attributes)
 		}
 
 		let result = NSMutableAttributedString()

@@ -13,6 +13,8 @@
 		C37662461D5CDBFD00A3DE45 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C37662441D5CDBFD00A3DE45 /* Main.storyboard */; };
 		C37662481D5CDBFD00A3DE45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C37662471D5CDBFD00A3DE45 /* Assets.xcassets */; };
 		C376624B1D5CDBFD00A3DE45 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C37662491D5CDBFD00A3DE45 /* LaunchScreen.storyboard */; };
+		C3AC74491ECB4E0D005D57A2 /* MaterialIcons-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C3AC74481ECB4E0D005D57A2 /* MaterialIcons-Regular.ttf */; };
+		C3AC744B1ECB4EC3005D57A2 /* MaterialIcons-Regular.ijmap in Resources */ = {isa = PBXBuildFile; fileRef = C3AC744A1ECB4EC3005D57A2 /* MaterialIcons-Regular.ijmap */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		C37662471D5CDBFD00A3DE45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C376624A1D5CDBFD00A3DE45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C376624C1D5CDBFD00A3DE45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3AC74481ECB4E0D005D57A2 /* MaterialIcons-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MaterialIcons-Regular.ttf"; sourceTree = "<group>"; };
+		C3AC744A1ECB4EC3005D57A2 /* MaterialIcons-Regular.ijmap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "MaterialIcons-Regular.ijmap"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,8 @@
 		C376623F1D5CDBFC00A3DE45 /* EzHTMLASSample */ = {
 			isa = PBXGroup;
 			children = (
+				C3AC74481ECB4E0D005D57A2 /* MaterialIcons-Regular.ttf */,
+				C3AC744A1ECB4EC3005D57A2 /* MaterialIcons-Regular.ijmap */,
 				C37662401D5CDBFC00A3DE45 /* AppDelegate.swift */,
 				C37662421D5CDBFC00A3DE45 /* ViewController.swift */,
 				C37662441D5CDBFD00A3DE45 /* Main.storyboard */,
@@ -153,6 +159,8 @@
 				C376624B1D5CDBFD00A3DE45 /* LaunchScreen.storyboard in Resources */,
 				C37662481D5CDBFD00A3DE45 /* Assets.xcassets in Resources */,
 				C37662461D5CDBFD00A3DE45 /* Main.storyboard in Resources */,
+				C3AC744B1ECB4EC3005D57A2 /* MaterialIcons-Regular.ijmap in Resources */,
+				C3AC74491ECB4E0D005D57A2 /* MaterialIcons-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

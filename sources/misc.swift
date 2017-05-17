@@ -24,11 +24,23 @@ extension String {
 		}
 		return String(ms)
 	}
+
+	func trim(_ chars: String? = nil) -> String {
+		var cs = CharacterSet.whitespacesAndNewlines
+		if let c = chars { cs = CharacterSet(charactersIn: c) }
+		return trimmingCharacters(in: cs)
+	}
+}
+
+public extension Array {
+	subscript(safe at: Int) -> Element? {
+		return indices.contains(at) ? self[at] : nil
+	}
 }
 
 extension UIColor {
 
-	public static func cssColor(_ str: String, alpha: CGFloat = 1.0) -> UIColor {
+	public static func css(_ str: String, alpha: CGFloat = 1.0) -> UIColor {
 
 		let cssNames: [String: CUnsignedLongLong] = [
 			"aliceblue": 0xF0F8FF,
@@ -190,11 +202,17 @@ extension UIColor {
 			"iospink": 0xFF2D55,
 		]
 
-		var v: CUnsignedLongLong = 0
+		var v: CUnsignedLongLong = 0x1000000
 
-		if let cv = cssNames[str.lowercased()] {
-			v = cv
-		} else {
+		if let fc = str.unicodeScalars.first { // fast?
+			if CharacterSet.letters.contains(fc) {
+				if let cv = cssNames[str.lowercased()] {
+					v = cv
+				}
+			}
+		}
+
+		if v == 0x1000000 {
 			let scanner = Scanner(string: str.ns.replacingOccurrences(of: "#", with: ""))
 			var hv: CUnsignedLongLong = 0
 			if scanner.scanHexInt64(&hv) { v = hv }
