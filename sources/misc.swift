@@ -13,8 +13,7 @@ extension String {
 	var ns: NSString { return (self as NSString) }
 
 	func has(string str: String) -> Bool {
-		if let _ = range(of: str) { return true }
-		return false
+		return range(of: str) != nil
 	}
 
 	func replace(_ dic: [(String, String)]) -> String {
@@ -32,13 +31,13 @@ extension String {
 	}
 }
 
-public extension Array {
+extension Array {
 	subscript(safe at: Int) -> Element? {
 		return indices.contains(at) ? self[at] : nil
 	}
 }
 
-extension UIColor {
+public extension UIColor {
 
 	public static func css(_ str: String, alpha: CGFloat = 1.0) -> UIColor {
 

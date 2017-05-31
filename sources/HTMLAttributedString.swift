@@ -9,18 +9,15 @@ extension UILabel {
 	public var HTML: String {
 		get {
 			guard let a = attributedText else { return "" }
-			let f = (a.attribute("baseFont", at: 0, effectiveRange: nil) as? UIFont) ?? font
-			return a.HTMLString(f)
-			// 1st chr has font setting, label.font is 1st char font
+			return a.HTMLString()
 		}
 		set {
-			let nstr = "<font point=\"\(font.pointSize)\">" + newValue + "</font>" // set to base font size to whole,this for correct nsattrinbutestring.size
-			attributedText = nstr.attributedString(font)
+			attributedText = newValue.attributedString(font)
 
 			attributedText?.loadAttachedImages { [weak self] in
 				guard let me = self else { return }
 				let z = me.attributedText
-				me.attributedText = NSAttributedString()
+				me.attributedText = NSAttributedString() // reset
 				me.attributedText = z
 			}
 		}
@@ -70,8 +67,7 @@ extension UITextView {
 	public var HTML: String {
 		get {
 			guard let a = attributedText else { return "" }
-			let f = (a.attribute("baseFont", at: 0, effectiveRange: nil) as? UIFont) ?? font
-			return a.HTMLString(f)
+			return a.HTMLString()
 		}
 		set {
 			attributedText = newValue.attributedString(font)
@@ -79,7 +75,7 @@ extension UITextView {
 			attributedText.loadAttachedImages { [weak self] in
 				guard let me = self else { return }
 				let z = me.attributedText
-				me.attributedText = NSAttributedString()
+				me.attributedText = NSAttributedString() // reset
 				me.attributedText = z
 			}
 		}
@@ -90,12 +86,10 @@ extension UIButton {
 	public var HTML: String {
 		get {
 			guard let a = attributedTitle(for: .normal) else { return "" }
-			let f = (a.attribute("baseFont", at: 0, effectiveRange: nil) as? UIFont) ?? titleLabel?.font ?? UIFont.systemFont(ofSize: 17)
-			return a.HTMLString(f)
+			return a.HTMLString()
 		}
 		set {
-			let f = titleLabel?.font ?? UIFont.systemFont(ofSize: 17)
-			setAttributedTitle(newValue.attributedString(f), for: .normal)
+			setAttributedTitle(newValue.attributedString(titleLabel?.font), for: .normal)
 		}
 	}
 }
@@ -108,10 +102,26 @@ extension String {
 }
 
 public extension NSAttributedString {
-	func HTMLString(_ font: UIFont? = nil) -> String {
-		return HTMLAttributedString.toHTML(self, font: font ?? UIFont.systemFont(ofSize: 17))
+	func HTMLString() -> String {
+		return HTMLAttributedString.toHTML(self)
 	}
 
+	func boundedSize(_ size: CGSize) -> CGSize {
+		return boundingRect(with: size, options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).integral.size
+	}
+
+	func boundedRect(_ rc: CGRect) -> CGRect {
+		var r = rc
+		r.size = boundedSize(rc.size)
+		return r
+	}
+
+	func heightWith(width: CGFloat, max: CGFloat = 30000) -> CGFloat {
+		return boundedSize(CGSize(width: width, height: max)).height
+	}
+}
+
+extension NSAttributedString {
 	func loadAttachedImages(completion: (() -> Void)?) {
 		enumerateAttribute("requestimage", in: NSMakeRange(0, length), options: []) { value, _, _ in
 			guard let param = value as? [String: Any],
@@ -122,7 +132,6 @@ public extension NSAttributedString {
 			let task = URLSession.shared.dataTask(with: url) { d, _, _ in
 				guard let od = d, let img = UIImage(data: od) else { return }
 				DispatchQueue.main.async {
-
 					if let h = param["capheight"] as? CGFloat {
 						attach.bounds = CGRect(x: 0, y: round((h - img.size.height) / 2), width: img.size.width, height: img.size.height)
 					}
@@ -195,9 +204,9 @@ public struct HTMLAttributedString {
 
 	 */
 
-	static func toHTML(_ astring: NSAttributedString, font: UIFont) -> String {
+	static func toHTML(_ astring: NSAttributedString) -> String {
 
-		func nsatb2htmlElement(_ atb: [String: Any], font: UIFont) -> [String] {
+		func nsatb2htmlElement(_ atb: [String: Any]) -> [String] {
 
 			var result: [String] = []
 			var fontr: [String] = []
@@ -210,6 +219,7 @@ public struct HTMLAttributedString {
 					if des.symbolicTraits.contains(.traitBold) { result.append("b") }
 					if des.symbolicTraits.contains(.traitItalic) { result.append("i") }
 
+					let font = atb[NSFontAttributeName] as? UIFont ?? UIFont.systemFont(ofSize: 17)
 					if f.pointSize == font.pointSize { break }
 
 					var done = false
@@ -251,7 +261,7 @@ public struct HTMLAttributedString {
 		var result: String = ""
 
 		astring.enumerateAttributes(in: NSRange(location: 0, length: astring.length), options: []) { attributes, range, _ in
-			let elements = nsatb2htmlElement(attributes, font: font)
+			let elements = nsatb2htmlElement(attributes)
 			let str = astring.attributedSubstring(from: range).string
 
 			//			if let h = as2htmlHandler {
@@ -318,6 +328,10 @@ public struct HTMLAttributedString {
 	 */
 	public static func toAS(_ str: String, font: UIFont) -> NSAttributedString {
 
+		if !str.has(string: "<") {
+			return NSAttributedString(string: str, attributes: [NSFontAttributeName: font])
+		}
+
 		func xstr(_ ptr: UnsafePointer<xmlChar>?) -> String? {
 			guard let ptr = ptr else { return nil }
 			var r: String?
@@ -345,7 +359,7 @@ public struct HTMLAttributedString {
 			return v
 		}
 
-		func modifyAttribute(_ atb: inout [String: Any], font: UIFont, node: xmlNodePtr) -> NSAttributedString? {
+		func modifyAttribute(_ atb: inout [String: Any], node: xmlNodePtr) -> NSAttributedString? {
 
 			var result: NSAttributedString?
 
@@ -383,6 +397,8 @@ public struct HTMLAttributedString {
 				if let v = params["point"] { changeFontSize(&atb, size: v.CGFloatValue) }
 				if let v = params["color"] { atb[NSForegroundColorAttributeName] = UIColor.css(v) }
 				if let v = params["background"] { atb[NSBackgroundColorAttributeName] = UIColor.css(v) }
+				if let v = params["normal"] { atb[NSFontAttributeName] = UIFont.systemFont(ofSize: v.CGFloatValue) }
+				if let v = params["bold"] { atb[NSFontAttributeName] = UIFont.boldSystemFont(ofSize: v.CGFloatValue) }
 				if let v = params["line-height"] {
 					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
 					ps.maximumLineHeight = v.CGFloatValue
@@ -445,10 +461,8 @@ public struct HTMLAttributedString {
 			case "p", "span":
 				if element == "p" { result = NSAttributedString(string: "\n", attributes: atb) }
 
-				if let v = params["style"] {
-					if let style = styles[v] {
-						for (k, z) in style { atb[k] = z }
-					}
+				if let v = params["style"], let style = styles[v] {
+					for (k, z) in style { atb[k] = z }
 				}
 
 				if let v = params["align"] {
@@ -476,8 +490,8 @@ public struct HTMLAttributedString {
 					atb[NSParagraphStyleAttributeName] = ps
 				}
 
-				if let v = params["direction"] {
-					if v == "vertical" { atb[NSVerticalGlyphFormAttributeName] = 1 }
+				if let v = params["direction"], v == "vertical" {
+					atb[NSVerticalGlyphFormAttributeName] = 1
 				}
 
 			case "a":
@@ -495,27 +509,26 @@ public struct HTMLAttributedString {
 			return result
 		}
 
-		func asByNode(_ node: xmlNodePtr, attributes: [String: Any], font: UIFont) -> NSAttributedString {
+		func asByNode(_ node: xmlNodePtr, attributes: [String: Any]) -> NSAttributedString {
 
 			let result = NSMutableAttributedString()
 			var atb = attributes
 
 			if node.pointee.type == XML_ELEMENT_NODE {
-				if let r = modifyAttribute(&atb, font: font, node: node) {
+				if let r = modifyAttribute(&atb, node: node) {
 					result.append(r)
 				}
 			}
 
 			if node.pointee.type != XML_ENTITY_REF_NODE && node.pointee.type != XML_ELEMENT_NODE && node.pointee.content != nil {
 				if let s = xstr(node.pointee.content) {
-					// let t = s.removingPercentEncoding ?? ""
 					result.append(makeAppendAttributedString(s: s, attributes: atb))
 				}
 			}
 
 			var current = node.pointee.children
 			while current != nil {
-				result.append(asByNode(current!, attributes: atb, font: font))
+				result.append(asByNode(current!, attributes: atb))
 				current = current?.pointee.next
 			}
 			return result
@@ -530,24 +543,17 @@ public struct HTMLAttributedString {
 		}
 
 		let result = NSMutableAttributedString()
-		guard let data = str.data(using: String.Encoding.utf8) else { return result }
+		guard let data = str.data(using: .utf8) else { return result }
 
 		let document = htmlReadMemory((data as NSData).bytes.bindMemory(to: Int8.self, capacity: data.count), Int32(data.count), nil, "UTF-8", Int32(HTML_PARSE_NOWARNING.rawValue | HTML_PARSE_NOERROR.rawValue))
 		if document == nil { return result }
 
 		var current = document?.pointee.children
 		while current != nil {
-			result.append(asByNode(current!, attributes: [:], font: font))
+			result.append(asByNode(current!, attributes: [NSFontAttributeName: font]))
 			current = current?.pointee.next
 		}
 		xmlFreeDoc(document)
-
-		let rs = result.string
-		if rs.hasPrefix("\n") { result.deleteCharacters(in: NSRange(location: 0, length: 1)) }
-
-		// add original base size
-		let fullRange = NSRange(location: 0, length: result.length)
-		result.addAttributes(["baseFont": font], range: fullRange)
 
 		return result
 	}

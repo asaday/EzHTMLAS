@@ -6,14 +6,14 @@
 
 import UIKit
 
-public class ClickableLabel: UILabel, UIGestureRecognizerDelegate {
+open class EzHTMLClickableLabel: UILabel, UIGestureRecognizerDelegate {
 	public var didSelectLink: ((String) -> Void)?
 
 	var ges: UITapGestureRecognizer?
 	var lastPoint: CGPoint?
 	var lastValue: String?
 
-	public func setClickable() { // set this after each set attributedstring
+	open func setClickable() { // set this after each set attributedstring
 		if ges == nil {
 			let g = UITapGestureRecognizer(target: self, action: #selector(tap(ges:)))
 			addGestureRecognizer(g)
@@ -28,7 +28,7 @@ public class ClickableLabel: UILabel, UIGestureRecognizerDelegate {
 		lastValue = nil
 	}
 
-	public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+	open override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
 		if ges != gestureRecognizer { return true }
 		if didSelectLink == nil { return false }
 
@@ -46,11 +46,9 @@ public class ClickableLabel: UILabel, UIGestureRecognizerDelegate {
 	func tap(ges: UITapGestureRecognizer) {
 		let pnt = ges.location(in: self)
 
-		if let lp = lastPoint, let lv = lastValue {
-			if pnt.equalTo(lp) {
-				didSelectLink?(lv)
-				return
-			}
+		if let lp = lastPoint, let lv = lastValue, pnt.equalTo(lp) { //  already found, short cut rutines
+			didSelectLink?(lv)
+			return
 		}
 
 		if let r = findLink(position: pnt) {
