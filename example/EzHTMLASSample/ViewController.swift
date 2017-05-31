@@ -14,7 +14,7 @@ class ViewController: UIViewController {
 		let clbl = ClickableLabel(frame: CGRect(x: 0, y: 200, width: view.bounds.width, height: 100))
 		clbl.didSelectLink = { a in print(a) }
 		clbl.numberOfLines = 0
-		clbl.HTML = "aaa &#x3042;<font point=20>big</font> <font color=red>red</font> <a href=zzz>link</a> aaa  <img width=50 height=50 src=\"https://dummyimage.com/50x50/000/fff&text=\(arc4random())\">"
+		clbl.HTML = "aaa &#x3042;<font point=20>big</font> <font color=red>red</font> <font color=#00ff00>green</font> <a href=zzz>link</a> aaa  <img width=100 height=50 src=\"https://dummyimage.com/100x50/000/fff&text=\(arc4random())\">"
 		clbl.setClickable()
 		view.addSubview(clbl)
 

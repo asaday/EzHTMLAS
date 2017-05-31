@@ -214,8 +214,7 @@ extension UIColor {
 
 		if v == 0x1000000 {
 			let scanner = Scanner(string: str.ns.replacingOccurrences(of: "#", with: ""))
-			var hv: CUnsignedLongLong = 0
-			if scanner.scanHexInt64(&hv) { v = hv }
+			scanner.scanHexInt64(&v)
 		}
 
 		let red = CGFloat(((v >> 16) & 0xFF) / 255)
