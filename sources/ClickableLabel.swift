@@ -43,7 +43,7 @@ open class EzHTMLClickableLabel: UILabel, UIGestureRecognizerDelegate {
 		return false
 	}
 
-	func tap(ges: UITapGestureRecognizer) {
+	@objc func tap(ges: UITapGestureRecognizer) {
 		let pnt = ges.location(in: self)
 
 		if let lp = lastPoint, let lv = lastValue, pnt.equalTo(lp) { //  already found, short cut rutines

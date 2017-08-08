@@ -1,15 +1,15 @@
 PODS:
-  - EzHTMLAS (0.0.6)
+  - EzHTMLAS (0.0.9)
 
 DEPENDENCIES:
   - EzHTMLAS (from `../`)
 
 EXTERNAL SOURCES:
   EzHTMLAS:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
-  EzHTMLAS: fed5a09aeacff1563aaf7d9c158c1d7cb4d0fb6c
+  EzHTMLAS: 1728a9288bf3b1706fb47daef1068a1569302186
 
 PODFILE CHECKSUM: 92eecf89247f4463b5bfcd5aee843cda703b8e80
 
