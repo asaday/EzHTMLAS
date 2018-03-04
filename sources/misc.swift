@@ -8,7 +8,13 @@ extension String {
 	var intValue: Int { return Int(self) ?? 0 }
 	var floatValue: Float { return Float(self) ?? 0 }
 	var CGFloatValue: CGFloat { return CGFloat(floatValue) }
-	var length: Int { return characters.count }
+	var length: Int {
+		#if swift(>=3.2)
+			return count
+		#else
+			return characters.count
+		#endif
+	}
 
 	var ns: NSString { return (self as NSString) }
 

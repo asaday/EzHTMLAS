@@ -26,7 +26,7 @@ extension UILabel {
 	public func hasLink() -> Bool {
 		var has = false
 		if let ats = attributedText {
-			ats.enumerateAttribute(NSLinkAttributeName, in: NSMakeRange(0, ats.length), options: [], using: { v, _, _ in
+			ats.enumerateAttribute(.link, in: NSMakeRange(0, ats.length), options: [], using: { v, _, _ in
 				if v != nil { has = true }
 			})
 		}
@@ -58,7 +58,7 @@ extension UILabel {
 		let index = layoutManager.characterIndex(for: pos, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
 		if index < 0 || index >= ats.length { return nil }
 
-		guard let val = ats.attribute(NSLinkAttributeName, at: index, effectiveRange: nil) as? String else { return nil }
+		guard let val = ats.attribute(.link, at: index, effectiveRange: nil) as? String else { return nil }
 		return val
 	}
 }
@@ -123,7 +123,7 @@ public extension NSAttributedString {
 
 extension NSAttributedString {
 	func loadAttachedImages(completion: (() -> Void)?) {
-		enumerateAttribute("requestimage", in: NSMakeRange(0, length), options: []) { value, _, _ in
+		enumerateAttribute(NSAttributedStringKey(rawValue: "requestimage"), in: NSMakeRange(0, length), options: []) { value, _, _ in
 			guard let param = value as? [String: Any],
 				let src = param["src"] as? String,
 				let attach = param["attach"] as? NSTextAttachment,
@@ -148,25 +148,25 @@ extension NSAttributedString {
 public struct HTMLAttributedString {
 
 	public static func setStyle(_ key: String, _ font: UIFont, _ color: UIColor?, _ bgcolor: UIColor?) {
-		var dic: [String: Any] = [:]
-		dic[NSFontAttributeName] = font
-		if let c = color { dic[NSForegroundColorAttributeName] = c }
-		if let c = bgcolor { dic[NSBackgroundColorAttributeName] = c }
+		var dic: [NSAttributedStringKey: Any] = [:]
+		dic[.font] = font
+		if let c = color { dic[.foregroundColor] = c }
+		if let c = bgcolor { dic[.backgroundColor] = c }
 		styles[key] = dic
 	}
 
-	public static func setStyle(_ key: String, param: [String: Any]) {
+	public static func setStyle(_ key: String, param: [NSAttributedStringKey: Any]) {
 		styles[key] = param
 	}
 
-	public static var styles: [String: [String: Any]] = [
-		"head": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)], // 17 semi-bold
-		"sub": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.subheadline)], // 15
-		"body": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)], // 17
-		"foot": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.footnote)], // 13
-		"caption1": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.caption1)], // 12
-		"caption2": [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.caption2)], // 11
-		"a": [NSUnderlineStyleAttributeName: 1, NSForegroundColorAttributeName: UIColor(red: 0, green: 0.48, blue: 1, alpha: 1)],
+	public static var styles: [String: [NSAttributedStringKey: Any]] = [
+		"head": [.font: UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)], // 17 semi-bold
+		"sub": [.font: UIFont.preferredFont(forTextStyle: UIFontTextStyle.subheadline)], // 15
+		"body": [.font: UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)], // 17
+		"foot": [.font: UIFont.preferredFont(forTextStyle: UIFontTextStyle.footnote)], // 13
+		"caption1": [.font: UIFont.preferredFont(forTextStyle: UIFontTextStyle.caption1)], // 12
+		"caption2": [.font: UIFont.preferredFont(forTextStyle: UIFontTextStyle.caption2)], // 11
+		"a": [.underlineStyle: 1, .foregroundColor: UIColor(red: 0, green: 0.48, blue: 1, alpha: 1)],
 
 		// you can add more
 	]
@@ -206,20 +206,20 @@ public struct HTMLAttributedString {
 
 	static func toHTML(_ astring: NSAttributedString) -> String {
 
-		func nsatb2htmlElement(_ atb: [String: Any]) -> [String] {
+		func nsatb2htmlElement(_ atb: [NSAttributedStringKey: Any]) -> [String] {
 
 			var result: [String] = []
 			var fontr: [String] = []
 
 			for (k, v) in atb {
 				switch k {
-				case NSFontAttributeName:
+				case .font:
 					guard let f = v as? UIFont else { break }
 					let des = f.fontDescriptor
 					if des.symbolicTraits.contains(.traitBold) { result.append("b") }
 					if des.symbolicTraits.contains(.traitItalic) { result.append("i") }
 
-					let font = atb[NSFontAttributeName] as? UIFont ?? UIFont.systemFont(ofSize: 17)
+					let font = atb[.font] as? UIFont ?? UIFont.systemFont(ofSize: 17)
 					if f.pointSize == font.pointSize { break }
 
 					var done = false
@@ -233,18 +233,18 @@ public struct HTMLAttributedString {
 					if done { break }
 					fontr.append("point-size=\"\((f.pointSize))\"")
 
-				case NSForegroundColorAttributeName:
+				case .foregroundColor:
 					guard let c = v as? UIColor else { break }
 					var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
 					c.getRed(&r, green: &g, blue: &b, alpha: &a)
 					let s = String(format: "%02X%02X%02X", Int(r * 255), Int(g * 255), Int(b * 255))
 					fontr.append("color=\"#\(s)\"")
 
-				case NSLinkAttributeName:
+				case .link:
 					guard let s = v as? String else { break }
 					result.append("a href=\"\(s)\"")
 
-				case NSUnderlineStyleAttributeName:
+				case .underlineStyle:
 					result.append("u")
 
 				default:
@@ -273,7 +273,7 @@ public struct HTMLAttributedString {
 
 			if str == "\u{fffc}" {
 				result += "<img"
-				if let v = astring.attribute("imgsrc", at: range.location, effectiveRange: nil) as? String {
+				if let v = astring.attribute(NSAttributedStringKey(rawValue: "imgsrc"), at: range.location, effectiveRange: nil) as? String {
 					result += " src=\"\(v)\""
 				}
 				result += "/>"
@@ -329,7 +329,7 @@ public struct HTMLAttributedString {
 	public static func toAS(_ str: String, font: UIFont) -> NSAttributedString {
 
 		if !str.has(string: "<") {
-			return NSAttributedString(string: str, attributes: [NSFontAttributeName: font])
+			return NSAttributedString(string: str, attributes: [.font: font])
 		}
 
 		func xstr(_ ptr: UnsafePointer<xmlChar>?) -> String? {
@@ -341,16 +341,16 @@ public struct HTMLAttributedString {
 			return r
 		}
 
-		func changeFontSize(_ atb: inout [String: Any], size: CGFloat) {
-			if let f = atb[NSFontAttributeName] as? UIFont {
-				atb[NSFontAttributeName] = UIFont(descriptor: f.fontDescriptor, size: size)
-			} else { atb[NSFontAttributeName] = UIFont.systemFont(ofSize: size) }
+		func changeFontSize(_ atb: inout [NSAttributedStringKey: Any], size: CGFloat) {
+			if let f = atb[.font] as? UIFont {
+				atb[.font] = UIFont(descriptor: f.fontDescriptor, size: size)
+			} else { atb[.font] = UIFont.systemFont(ofSize: size) }
 		}
 
-		func changeFontTrait(_ atb: inout [String: Any], traits: UIFontDescriptorSymbolicTraits) {
-			if let f = atb[NSFontAttributeName] as? UIFont, let fd = f.fontDescriptor.withSymbolicTraits(traits) {
-				atb[NSFontAttributeName] = UIFont(descriptor: fd, size: f.pointSize)
-			} else { atb[NSFontAttributeName] = UIFont.boldSystemFont(ofSize: 17) }
+		func changeFontTrait(_ atb: inout [NSAttributedStringKey: Any], traits: UIFontDescriptorSymbolicTraits) {
+			if let f = atb[.font] as? UIFont, let fd = f.fontDescriptor.withSymbolicTraits(traits) {
+				atb[.font] = UIFont(descriptor: fd, size: f.pointSize)
+			} else { atb[.font] = UIFont.boldSystemFont(ofSize: 17) }
 		}
 
 		func newParagraph() -> NSMutableParagraphStyle {
@@ -359,7 +359,7 @@ public struct HTMLAttributedString {
 			return v
 		}
 
-		func modifyAttribute(_ atb: inout [String: Any], node: xmlNodePtr) -> NSAttributedString? {
+		func modifyAttribute(_ atb: inout [NSAttributedStringKey: Any], node: xmlNodePtr) -> NSAttributedString? {
 
 			var result: NSAttributedString?
 
@@ -386,7 +386,7 @@ public struct HTMLAttributedString {
 					var idx = v.intValue
 					if v.hasPrefix("+") || v.hasPrefix("-") {
 						var org: Int = 3
-						if let f = atb[NSFontAttributeName] as? UIFont, let fi = fontSizes.index(of: f.pointSize / font.pointSize) { org = fi }
+						if let f = atb[.font] as? UIFont, let fi = fontSizes.index(of: f.pointSize / font.pointSize) { org = fi }
 						idx += org
 					}
 					if idx < 0 || idx >= fontSizes.count { idx = 3 }
@@ -395,15 +395,15 @@ public struct HTMLAttributedString {
 
 				if let v = params["point-size"] { changeFontSize(&atb, size: v.CGFloatValue) }
 				if let v = params["point"] { changeFontSize(&atb, size: v.CGFloatValue) }
-				if let v = params["color"] { atb[NSForegroundColorAttributeName] = UIColor.css(v) }
-				if let v = params["background"] { atb[NSBackgroundColorAttributeName] = UIColor.css(v) }
-				if let v = params["normal"] { atb[NSFontAttributeName] = UIFont.systemFont(ofSize: v.CGFloatValue) }
-				if let v = params["bold"] { atb[NSFontAttributeName] = UIFont.boldSystemFont(ofSize: v.CGFloatValue) }
+				if let v = params["color"] { atb[.foregroundColor] = UIColor.css(v) }
+				if let v = params["background"] { atb[.backgroundColor] = UIColor.css(v) }
+				if let v = params["normal"] { atb[.font] = UIFont.systemFont(ofSize: v.CGFloatValue) }
+				if let v = params["bold"] { atb[.font] = UIFont.boldSystemFont(ofSize: v.CGFloatValue) }
 				if let v = params["line-height"] {
-					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
+					let ps = atb[.paragraphStyle] as? NSMutableParagraphStyle ?? newParagraph()
 					ps.maximumLineHeight = v.CGFloatValue
 					ps.minimumLineHeight = v.CGFloatValue
-					atb[NSParagraphStyleAttributeName] = ps
+					atb[.paragraphStyle] = ps
 				}
 
 			case "b":
@@ -419,11 +419,11 @@ public struct HTMLAttributedString {
 					let ss = cls.components(separatedBy: " ")
 					if let ex = extFonts[ss[0]] {
 						var size: CGFloat = 18
-						if let f = atb[NSFontAttributeName] as? UIFont { size = f.pointSize }
+						if let f = atb[.font] as? UIFont { size = f.pointSize }
 						if let v = ss[safe: 1] { size = v.CGFloatValue }
-						if let v = ss[safe: 2] { atb[NSBaselineOffsetAttributeName] = v.floatValue }
-						atb[NSFontAttributeName] = UIFont(name: ex.font, size: size)
-						atb["exfont"] = ss[0]
+						if let v = ss[safe: 2] { atb[.baselineOffset] = v.floatValue }
+						atb[.font] = UIFont(name: ex.font, size: size)
+						atb[NSAttributedStringKey("exfont")] = ss[0]
 					}
 				} else {
 					changeFontTrait(&atb, traits: .traitItalic)
@@ -447,12 +447,12 @@ public struct HTMLAttributedString {
 					if rc.width > 0 && rc.height > 0 { attach.bounds = rc }
 
 					let ras = NSAttributedString(attachment: attach).mutableCopy() as? NSMutableAttributedString
-					ras?.addAttribute("imgsrc", value: src, range: NSRange(location: 0, length: 1))
+					ras?.addAttribute(NSAttributedStringKey(rawValue: "imgsrc"), value: src, range: NSRange(location: 0, length: 1))
 
 					if attach.image == nil {
 						var dic: [String: Any] = ["src": src, "attach": attach]
 						if rc.width == 0 && rc.height == 0 { dic["capheight"] = font.capHeight }
-						ras?.addAttribute("requestimage", value: dic, range: NSRange(location: 0, length: 1))
+						ras?.addAttribute(NSAttributedStringKey(rawValue: "requestimage"), value: dic, range: NSRange(location: 0, length: 1))
 					}
 
 					result = ras?.copy() as? NSAttributedString
@@ -466,18 +466,18 @@ public struct HTMLAttributedString {
 				}
 
 				if let v = params["align"] {
-					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
+					let ps = atb[.paragraphStyle] as? NSMutableParagraphStyle ?? newParagraph()
 					switch v {
 					case "left": ps.alignment = .left
 					case "right": ps.alignment = .right
 					case "center": ps.alignment = .center
 					default: break
 					}
-					atb[NSParagraphStyleAttributeName] = ps
+					atb[.paragraphStyle] = ps
 				}
 
 				if let v = params["line-break"] {
-					let ps = atb[NSParagraphStyleAttributeName] as? NSMutableParagraphStyle ?? newParagraph()
+					let ps = atb[.paragraphStyle] as? NSMutableParagraphStyle ?? newParagraph()
 					switch v {
 					case "word-wrapping": ps.lineBreakMode = .byWordWrapping
 					case "char-wrapping": ps.lineBreakMode = .byCharWrapping
@@ -487,16 +487,16 @@ public struct HTMLAttributedString {
 					case "truncating-middle": ps.lineBreakMode = .byTruncatingMiddle
 					default: break
 					}
-					atb[NSParagraphStyleAttributeName] = ps
+					atb[.paragraphStyle] = ps
 				}
 
 				if let v = params["direction"], v == "vertical" {
-					atb[NSVerticalGlyphFormAttributeName] = 1
+					atb[.verticalGlyphForm] = 1
 				}
 
 			case "a":
 				if let v = params["href"] {
-					atb[NSLinkAttributeName] = v
+					atb[.link] = v
 					if let style = styles["a"] {
 						for (k, z) in style { atb[k] = z }
 					}
@@ -509,7 +509,7 @@ public struct HTMLAttributedString {
 			return result
 		}
 
-		func asByNode(_ node: xmlNodePtr, attributes: [String: Any]) -> NSAttributedString {
+		func asByNode(_ node: xmlNodePtr, attributes: [NSAttributedStringKey: Any]) -> NSAttributedString {
 
 			let result = NSMutableAttributedString()
 			var atb = attributes
@@ -534,8 +534,8 @@ public struct HTMLAttributedString {
 			return result
 		}
 
-		func makeAppendAttributedString(s: String, attributes: [String: Any]) -> NSAttributedString {
-			if let exfont = attributes["exfont"] as? String, let code = extFonts[exfont]?.names[s.trim()] {
+		func makeAppendAttributedString(s: String, attributes: [NSAttributedStringKey: Any]) -> NSAttributedString {
+			if let exfont = attributes[NSAttributedStringKey("exfont")] as? String, let code = extFonts[exfont]?.names[s.trim()] {
 				return NSAttributedString(string: String(describing: UnicodeScalar(code)), attributes: attributes)
 			}
 
@@ -550,7 +550,7 @@ public struct HTMLAttributedString {
 
 		var current = document?.pointee.children
 		while current != nil {
-			result.append(asByNode(current!, attributes: [NSFontAttributeName: font]))
+			result.append(asByNode(current!, attributes: [.font: font]))
 			current = current?.pointee.next
 		}
 		xmlFreeDoc(document)
