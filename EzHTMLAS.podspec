@@ -20,4 +20,8 @@ s.module_map = 'resources/module.modulemap'
 s.private_header_files = 'sources/libxml2_re.h'
 
 
+s.pod_target_xcconfig = {
+  'SWIFT_VERSION' => '4.0'
+}
+
 end
