@@ -4,9 +4,9 @@
 [![Version Status](https://img.shields.io/cocoapods/v/EzHTMLAS?style=flat)](http://cocoadocs.org/docsets/EzHTMLAS) 
 [![Platform](http://img.shields.io/cocoapods/p/EzHTMLAS?style=flat)](http://cocoapods.org/?q= EzHTMLAS) 
 
-
 html string to attributed string libs
 
+swift 3.2 use 0.0.x
 
 UILabel, UITextView, UIButton extention
 
