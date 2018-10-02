@@ -6,6 +6,8 @@
 
 html string to attributed string libs
 
+for swift 4.2
+
 swift 3.2 use 0.0.x
 
 UILabel, UITextView, UIButton extention
