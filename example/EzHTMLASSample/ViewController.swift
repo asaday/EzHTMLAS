@@ -3,11 +3,10 @@
 //  EzHTMLAS Sample
 //
 
-import UIKit
 import EzHTMLAS
+import UIKit
 
 class ViewController: UIViewController {
-
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
@@ -24,7 +23,7 @@ class ViewController: UIViewController {
 
 		let lbl = UILabel(frame: CGRect(x: 0, y: 100, width: view.bounds.width, height: 100))
 		lbl.numberOfLines = 0
-		lbl.HTML = "<span align=center><font size=10 line-height=20>hello</font><br/><br/> <b>bold</b></span><i class=\"material-icons\">&#xe05c;</i></span><i class=\"material-icons 30 -10\">face</i>XXX"
+		lbl.HTML = "<span align=center><font size=10 line-height=20>hello</font><br/><br/> <b>bold</b></span><i class=\"material-icons\">&#xe05c;</i></span><i class=\"material-icons 30 -10\">face</i><span base=20>XXX</span>"
 		view.addSubview(lbl)
 
 		//		let a = "ddddddd<br/>dddddddddddddddddddddddddd<br/>ddddddd<font point=20>dddddddddddddddddddddddddddddddddddddddddddddddd</font>ddddddddddddddddddddddddddddddddddddddddddddddddddXX".attributedString(UIFont.systemFont(ofSize: 10))

@@ -44,13 +44,10 @@ extension Array {
 }
 
 public extension UIColor {
-
 	public static func css(_ str: String, alpha: CGFloat = 1.0) -> UIColor {
-
 		var v: CUnsignedLongLong = 0x1000000
 
 		if let fc = str.unicodeScalars.first, CharacterSet.letters.contains(fc) { // fast?
-
 			let cssNames: [String: CUnsignedLongLong] = [
 				"aliceblue": 0xF0F8FF,
 				"antiquewhite": 0xFAEBD7,
