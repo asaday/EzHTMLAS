@@ -326,6 +326,8 @@ public struct HTMLAttributedString {
 			return NSAttributedString(string: str, attributes: [.font: font])
 		}
 
+		var isEmpty = true
+
 		func xstr(_ ptr: UnsafePointer<xmlChar>?) -> String? {
 			guard let ptr = ptr else { return nil }
 			var r: String?
@@ -336,15 +338,50 @@ public struct HTMLAttributedString {
 		}
 
 		func changeFontSize(_ atb: inout [NSAttributedString.Key: Any], size: CGFloat) {
-			if let f = atb[.font] as? UIFont {
-				atb[.font] = UIFont(descriptor: f.fontDescriptor, size: size)
-			} else { atb[.font] = UIFont.systemFont(ofSize: size) }
+			if let f = atb[.font] as? UIFont { atb[.font] = f.withSize(size) }
+			else { atb[.font] = UIFont.systemFont(ofSize: size) }
 		}
 
 		func changeFontTrait(_ atb: inout [NSAttributedString.Key: Any], traits: UIFontDescriptor.SymbolicTraits) {
 			if let f = atb[.font] as? UIFont, let fd = f.fontDescriptor.withSymbolicTraits(traits) {
 				atb[.font] = UIFont(descriptor: fd, size: f.pointSize)
 			} else { atb[.font] = UIFont.boldSystemFont(ofSize: 17) }
+		}
+
+		func name2weight(_ name: String) -> UIFont.Weight? {
+			if #available(iOS 8.2, *) {
+				let list: [String: UIFont.Weight] = [
+					"ultralight": .ultraLight,
+					"thin": .thin,
+					"light": .light,
+					"regular": .regular,
+					"medium": .medium,
+					"semibold": .semibold,
+					"bold": .bold,
+					"heavy": .heavy,
+					"black": .black,
+				]
+				if let w = list[name.lowercased()] { return w }
+			}
+			let v = name.CGFloatValue
+			if v > 0 { return UIFont.Weight(rawValue: v) }
+			return nil
+		}
+
+		func name2lineStyle(_ name: String) -> NSUnderlineStyle? {
+			let list: [String: NSUnderlineStyle] = [
+				"single": .single,
+				"thick": .thick,
+				"double": .double,
+				"patterndot": .patternDot,
+				"patterndash": .patternDash,
+				"patterndashdot": .patternDashDot,
+				"byword": .byWord,
+			]
+			if let w = list[name.lowercased()] { return w }
+			let v = name.intValue
+			if v > 0 { return NSUnderlineStyle(rawValue: v) }
+			return nil
 		}
 
 		func newParagraph() -> NSMutableParagraphStyle {
@@ -390,9 +427,34 @@ public struct HTMLAttributedString {
 				if let v = params["point"] { changeFontSize(&atb, size: v.CGFloatValue) }
 				if let v = params["color"] { atb[.foregroundColor] = UIColor.css(v) }
 				if let v = params["background"] { atb[.backgroundColor] = UIColor.css(v) }
-				if let v = params["normal"] { atb[.font] = UIFont.systemFont(ofSize: v.CGFloatValue) }
-				if let v = params["bold"] { atb[.font] = UIFont.boldSystemFont(ofSize: v.CGFloatValue) }
 				if let v = params["base"] { atb[.baselineOffset] = v.CGFloatValue }
+				if let v = params["stroke-color"] { atb[.strokeColor] = UIColor.css(v) }
+				if let v = params["stroke-width"] { atb[.strokeWidth] = v.CGFloatValue }
+				if let v = params["base"] { atb[.baselineOffset] = v.CGFloatValue }
+				if let v = params["bold"] { atb[.font] = UIFont.boldSystemFont(ofSize: v.CGFloatValue) }
+				if let v = params["italic"] { atb[.font] = UIFont.italicSystemFont(ofSize: v.CGFloatValue) }
+				if let v = params["normal"] {
+					atb[.font] = UIFont.systemFont(ofSize: v.CGFloatValue)
+					if #available(iOS 8.2, *) {
+						if let wn = params["weight"], let weight = name2weight(wn) {
+							atb[.font] = UIFont.systemFont(ofSize: v.CGFloatValue, weight: weight)
+						}
+					}
+				}
+				if let v = params["mono"] {
+					if #available(iOS 9.0, *) {
+						if let wn = params["weight"], let weight = name2weight(wn) {
+							atb[.font] = UIFont.monospacedDigitSystemFont(ofSize: v.CGFloatValue, weight: weight)
+						}
+					}
+				}
+				if let v = params["name"] {
+					var size: CGFloat = 17
+					if let f = atb[.font] as? UIFont { size = f.pointSize }
+					if let s = params["size"] { size = s.CGFloatValue }
+					if let s = params["point"] { size = s.CGFloatValue }
+					if let font = UIFont(name: v, size: size) { atb[.font] = font }
+				}
 				if let v = params["line-height"] {
 					let ps = atb[.paragraphStyle] as? NSMutableParagraphStyle ?? newParagraph()
 					ps.maximumLineHeight = v.CGFloatValue
@@ -402,6 +464,18 @@ public struct HTMLAttributedString {
 
 			case "b":
 				changeFontTrait(&atb, traits: .traitBold)
+
+			case "u":
+				atb[.underlineStyle] = 1
+				if let v = params["width"] { atb[.underlineStyle] = v.CGFloatValue }
+				if let v = params["style"], let s = name2lineStyle(v) { atb[.underlineStyle] = s }
+				if let v = params["color"] { atb[.underlineColor] = UIColor.css(v) }
+
+			case "s":
+				atb[.strikethroughStyle] = 1
+				if let v = params["width"] { atb[.strikethroughStyle] = v.CGFloatValue }
+				if let v = params["style"], let s = name2lineStyle(v) { atb[.strikethroughStyle] = s }
+				if let v = params["color"] { atb[.strikethroughColor] = UIColor.css(v) }
 
 			case "i":
 				// <i class="material-icons">face</i>
@@ -455,7 +529,7 @@ public struct HTMLAttributedString {
 				}
 
 			case "p", "span":
-				if element == "p" { result = NSAttributedString(string: "\n", attributes: atb) }
+				if element == "p" && !isEmpty { result = NSAttributedString(string: "\n", attributes: atb) }
 
 				if let v = params["style"], let style = styles[v] {
 					for (k, z) in style { atb[k] = z }
@@ -499,6 +573,20 @@ public struct HTMLAttributedString {
 					}
 				}
 
+			case "shadow":
+				var radius: CGFloat = 4
+				var offset = CGSize(width: 2, height: 2)
+				var color = UIColor.black
+				if let v = params["color"] { color = UIColor.css(v) }
+				if let v = params["radius"] { radius = v.CGFloatValue }
+				if let v = params["x"] { offset.width = v.CGFloatValue }
+				if let v = params["y"] { offset.height = v.CGFloatValue }
+				let shadow = NSShadow()
+				shadow.shadowColor = color
+				shadow.shadowOffset = offset
+				shadow.shadowBlurRadius = radius
+				atb[.shadow] = shadow
+
 			default:
 				break
 			}
@@ -527,6 +615,8 @@ public struct HTMLAttributedString {
 				result.append(asByNode(current!, attributes: atb))
 				current = current?.pointee.next
 			}
+
+			if result.string.count > 0 { isEmpty = false }
 			return result
 		}
 
@@ -541,7 +631,7 @@ public struct HTMLAttributedString {
 		let result = NSMutableAttributedString()
 		guard let data = str.data(using: .utf8) else { return result }
 
-		let document = htmlReadMemory((data as NSData).bytes.bindMemory(to: Int8.self, capacity: data.count), Int32(data.count), nil, "UTF-8", Int32(HTML_PARSE_NOWARNING.rawValue | HTML_PARSE_NOERROR.rawValue))
+		let document = htmlReadMemory((data as NSData).bytes.bindMemory(to: Int8.self, capacity: data.count), Int32(data.count), nil, "UTF-8", Int32(HTML_PARSE_NOWARNING.rawValue | HTML_PARSE_NOERROR.rawValue | HTML_PARSE_NOIMPLIED.rawValue))
 		if document == nil { return result }
 
 		var current = document?.pointee.children

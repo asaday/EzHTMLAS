@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
 s.name = "EzHTMLAS"
-s.version = "0.1.1"
+s.version = "0.1.2"
 s.summary = "HTML to AttributedString"
 
 s.homepage = "http://nagisaworks.com"
@@ -18,10 +18,5 @@ s.libraries = 'xml2'
 
 s.module_map = 'resources/module.modulemap'
 s.private_header_files = 'sources/libxml2_re.h'
-
-
-s.pod_target_xcconfig = {
-  'SWIFT_VERSION' => '4.2'
-}
 
 end
