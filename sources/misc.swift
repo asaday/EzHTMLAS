@@ -44,7 +44,7 @@ extension Array {
 }
 
 public extension UIColor {
-	public static var cssColorList: [String: UIColor] = [
+	static var cssColorList: [String: UIColor] = [
 		// iOS extend
 		"clear": UIColor.clear,
 		"iosred": UIColor(red: 1.00, green: 0.23, blue: 0.19, alpha: 1.0), // 0xFF3B30,
@@ -209,7 +209,7 @@ public extension UIColor {
 		"yellowgreen": 0x9ACD32,
 	]
 
-	public static func css(_ sstr: String, alpha: CGFloat = 1.0) -> UIColor {
+	static func css(_ sstr: String, alpha: CGFloat = 1.0) -> UIColor {
 		var v: CUnsignedLongLong = 0x1000000
 
 		let ar = sstr.split(separator: ":") // for alpha
@@ -222,9 +222,9 @@ public extension UIColor {
 
 		if v == 0x1000000 { Scanner(string: str.ns.replacingOccurrences(of: "#", with: "")).scanHexInt64(&v) }
 
-		let red = CGFloat(((v >> 16) & 0xFF)) / 255
-		let green = CGFloat(((v >> 8) & 0xFF)) / 255
-		let blue = CGFloat((v & 0xFF)) / 255
+		let red = CGFloat((v >> 16) & 0xFF) / 255
+		let green = CGFloat((v >> 8) & 0xFF) / 255
+		let blue = CGFloat(v & 0xFF) / 255
 
 		var al = alpha
 		if ar.count > 1 { al = String(ar[1]).CGFloatValue }

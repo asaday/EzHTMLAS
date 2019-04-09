@@ -19,7 +19,7 @@ class ViewController: UIViewController {
 		view.addSubview(clbl)
 
 		UIColor.cssColorList["tint"] = view.tintColor
-		
+
 		HTMLAttributedString.addExtraFont(cssName: "material-icons",
 		                                  fontName: "MaterialIcons-Regular",
 		                                  charNames: readijmap(name: "MaterialIcons-Regular.ijmap"))

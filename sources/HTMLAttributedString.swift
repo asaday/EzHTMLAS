@@ -226,7 +226,7 @@ public struct HTMLAttributedString {
 						}
 					}
 					if done { break }
-					fontr.append("point-size=\"\((f.pointSize))\"")
+					fontr.append("point-size=\"\(f.pointSize)\"")
 
 				case .foregroundColor:
 					guard let c = v as? UIColor else { break }
@@ -416,7 +416,7 @@ public struct HTMLAttributedString {
 					var idx = v.intValue
 					if v.hasPrefix("+") || v.hasPrefix("-") {
 						var org: Int = 3
-						if let f = atb[.font] as? UIFont, let fi = fontSizes.index(of: f.pointSize / font.pointSize) { org = fi }
+						if let f = atb[.font] as? UIFont, let fi = fontSizes.firstIndex(of: f.pointSize / font.pointSize) { org = fi }
 						idx += org
 					}
 					if idx < 0 || idx >= fontSizes.count { idx = 3 }
@@ -512,7 +512,7 @@ public struct HTMLAttributedString {
 					if let v = params["x"] { rc.origin.x = v.CGFloatValue } // may be no effect x
 					if let v = params["y"] { rc.origin.y = v.CGFloatValue }
 
-					if rc.width > 0 && rc.height > 0 { attach.bounds = rc }
+					if rc.width > 0, rc.height > 0 { attach.bounds = rc }
 
 					let res = NSAttributedString(attachment: attach).mutableCopy() as? NSMutableAttributedString
 					let range = NSRange(location: 0, length: 1)
@@ -521,7 +521,7 @@ public struct HTMLAttributedString {
 
 					if attach.image == nil {
 						var dic: [String: Any] = ["src": src, "attach": attach]
-						if rc.width == 0 && rc.height == 0 { dic["capheight"] = font.capHeight }
+						if rc.width == 0, rc.height == 0 { dic["capheight"] = font.capHeight }
 						res?.addAttribute(NSAttributedString.Key(rawValue: "requestimage"), value: dic, range: range)
 					}
 
@@ -529,7 +529,7 @@ public struct HTMLAttributedString {
 				}
 
 			case "p", "span":
-				if element == "p" && !isEmpty { result = NSAttributedString(string: "\n", attributes: atb) }
+				if element == "p", !isEmpty { result = NSAttributedString(string: "\n", attributes: atb) }
 
 				if let v = params["style"], let style = styles[v] {
 					for (k, z) in style { atb[k] = z }
@@ -604,7 +604,7 @@ public struct HTMLAttributedString {
 				}
 			}
 
-			if node.pointee.type != XML_ENTITY_REF_NODE && node.pointee.type != XML_ELEMENT_NODE && node.pointee.content != nil {
+			if node.pointee.type != XML_ENTITY_REF_NODE, node.pointee.type != XML_ELEMENT_NODE, node.pointee.content != nil {
 				if let s = xstr(node.pointee.content) {
 					result.append(makeAppendAttributedString(s: s, attributes: atb))
 				}
